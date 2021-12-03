@@ -21,6 +21,8 @@ import com.iset.unscramble.databinding.FragmentGameBinding
  * Fragment where the game is played, contains the game logic.
  */
 class GameFragment : Fragment() {
+
+
     private val viewModel: GameViewModel by viewModels()
 
 
@@ -40,35 +42,25 @@ class GameFragment : Fragment() {
         Log.d("GameFragment", "GameFragment created/re-created!")
         Log.d("GameFragment", "Word: ${viewModel.currentScrambledWord} " +
                 "Score: ${viewModel.score} WordCount: ${viewModel.currentWordCount}")
-
-
         return binding.root
-
     }
-    private fun showFinalScoreDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.congratulations))
-            .setMessage(getString(R.string.you_scored, viewModel.score.value))
-            .setCancelable(false)
-            .setNegativeButton(getString(R.string.exit)) { _, _ ->
-                exitGame()
 
-            }
-            .setPositiveButton(getString(R.string.play_again)) { _, _ ->
-                restartGame()
-            }
-            .show()
-    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
+        super.onViewCreated(view, savedInstanceState)
         binding.gameViewModel = viewModel
 
         binding.maxNoOfWords = MAX_NO_OF_WORDS
         binding.lifecycleOwner = viewLifecycleOwner
+        // Setup a click listener for the Submit and Skip buttons.
+        binding.submit.setOnClickListener { onSubmitWord() }
+        binding.skip.setOnClickListener { onSkipWord() }
         // Update the UI
 
-/*
+
+        /*viewModel.currentScrambledWord.observe(viewLifecycleOwner,
+            { newWord ->binding.textViewUnscrambledWord.text = newWord
+            })
         viewModel.score.observe(viewLifecycleOwner,
             { newScore ->
                 binding.score.text = getString(R.string.score, newScore)
@@ -77,8 +69,21 @@ class GameFragment : Fragment() {
             { newWordCount ->
                 binding.wordCount.text =
                     getString(R.string.word_count, newWordCount, MAX_NO_OF_WORDS)
-            })
-*/
+            })*/
+    }
+
+    private fun showFinalScoreDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.congratulations))
+            .setMessage(getString(R.string.you_scored, viewModel.score.value))
+            .setCancelable(false)
+            .setNegativeButton(getString(R.string.exit)) { _, _ ->
+                exitGame()
+            }
+            .setPositiveButton(getString(R.string.play_again)) { _, _ ->
+                restartGame()
+            }
+            .show()
     }
 
     /*
@@ -148,12 +153,5 @@ class GameFragment : Fragment() {
             binding.textField.isErrorEnabled = false
             binding.textInputEditText.text = null
         }
-    }
+    }}
 
-
-    override fun onDetach() {
-        super.onDetach()
-        Log.d("GameFragment", "GameFragment destroyed!")
-    }
-
-}
